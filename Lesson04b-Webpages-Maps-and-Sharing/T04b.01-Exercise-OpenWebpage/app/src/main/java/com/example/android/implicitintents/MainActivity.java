@@ -15,7 +15,10 @@
  */
 package com.example.android.implicitintents;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.ShareCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
@@ -36,9 +39,17 @@ public class MainActivity extends AppCompatActivity {
      */
     public void onClickOpenWebpageButton(View v) {
         // TODO (5) Create a String that contains a URL ( make sure it starts with http:// or https:// )
-
+        String url = "https://www.google.com.br";
         // TODO (6) Replace the Toast with a call to openWebPage, passing in the URL String from the previous step
-        Toast.makeText(this, "TODO: Open a web page when this button is clicked", Toast.LENGTH_SHORT).show();
+        openWebPage(url);
+    }
+
+    private void openWebPage(String url) {
+        Uri webPage = Uri.parse(url);
+        Intent intent = new Intent(Intent.ACTION_VIEW, webPage);
+        if(intent.resolveActivity(getPackageManager()) != null){
+            startActivity(intent);
+        }
     }
 
     /**
@@ -48,7 +59,22 @@ public class MainActivity extends AppCompatActivity {
      * @param v Button that was clicked.
      */
     public void onClickOpenAddressButton(View v) {
-        Toast.makeText(this, "TODO: Open a map when this button is clicked", Toast.LENGTH_SHORT).show();
+        String addressString = "Fraiburgo Santa Catarina";
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("geo")
+            .path("0,0")
+            .appendQueryParameter("q", addressString);
+        Uri addressUri = builder.build();
+
+        showMap(addressUri);
+    }
+
+    private void showMap(Uri place) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(place);
+        if(intent.resolveActivity(getPackageManager()) != null){
+            startActivity(intent);
+        }
     }
 
     /**
@@ -58,7 +84,20 @@ public class MainActivity extends AppCompatActivity {
      * @param v Button that was clicked.
      */
     public void onClickShareTextButton(View v) {
-        Toast.makeText(this, "TODO: Share text when this is clicked", Toast.LENGTH_LONG).show();
+        String textToShare = "Hello There";
+
+        shareText(textToShare);
+    }
+
+    private void shareText(String textToShare) {
+        String mimeType = "text/plain";
+        String title = "Learning How to share";
+
+        ShareCompat.IntentBuilder.from(this)
+            .setChooserTitle(title)
+            .setType(mimeType)
+            .setText(textToShare)
+            .startChooser();
     }
 
     /**
